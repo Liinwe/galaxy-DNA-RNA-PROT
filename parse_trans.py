@@ -4,6 +4,8 @@ import re
 from pprint import pprint
 parser = argparse.ArgumentParser(description='On fait un test')
 parser.add_argument('--fasta', required=True, help='Target fasta (categories)')
+parser.add_argument('--domain', required=False, default='eukaryote', help='eukaryote or prokaryote')
+parser.add_argument('--rf', required=False, default=1, help='reading frame you want to choose 1, 2 or 3')
 param = parser.parse_args()
 
 #LOAD FASTA
@@ -38,9 +40,9 @@ def cleaner(seq):
 	return seqA
 	
 
-#Traduction : nucleic sequence to proteic sequence
+#Translation nucleic sequence to proteic sequence
 
-def traduction(seq,readingFrameNumber):
+def translation(seq,readingFrameNumber,domain):
 	'''
 	:param seq: DNA or RNA sequence
 	:param readingFrameNumber : which reading frame it will use to find start codon (1,2 or 3)
@@ -59,18 +61,34 @@ def traduction(seq,readingFrameNumber):
 						GGG='G')
 						
 	codon_stop = dict(UAA='STOP', UAG='STOP', UGA='STOP')
+	if domain=='eukaryote':
+		codon_start=dict(AUG='START')
+	if domain=='prokaryote':
+		codon_start=dict(AUG='START', GUG='START',UUG='START')
+	
+	
 	l = len(seq)
 	stop = False
+	start = False
 	i = readingFrameNumber -1
-	prot_seq = ""
+	seq_prot = ""
 	while i < l and not stop:
 		codon = seq[i:i + 3]
-		if codon in genetic_code:
+		#print(codon, start,stop, 'etape1')
+		if codon in codon_start and not start:
+			start=True
+			print(codon,seq[i+3:i+12])
+			#print(codon, start, stop,'etape2')
+		if start and codon not in codon_stop:
 			seq_prot = seq_prot + (genetic_code[codon])
-			i += 3
+			#print(codon, start, stop,'etape3')
 		if codon in codon_stop:
 			stop = True
-	return (prot_seq)
+			start=False
+			#print(codon, start,stop, 'etape4')
+		i+=3
+			
+	return (seq_prot)
 	
 #Transcription (DNA > RNA)
 
@@ -81,6 +99,17 @@ def transcription(dna_seq):
 	'''
 	
 	rna_seq = dna_seq.replace('T','U')
-	return (dna_seq)
+	return (rna_seq)
 	
-pprint(load_fasta(param.fasta))
+'''MAIN'''
+interest_sequence=load_fasta(param.fasta)
+id_seq_prot={}
+
+for sequence in interest_sequence:
+	print(sequence)
+	print(translation(transcription(interest_sequence[sequence]),param.rf,param.domain))
+	print('\n\n')
+
+
+
+#print(translation('GUGAUGAUGAUGAUGUUGGGGAAAUGA',1,'prokaryote'))
