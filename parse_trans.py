@@ -40,7 +40,7 @@ def cleaner(seq):
 	seqA = ""
 	for letter in seq:
 		if letter != '\n' and letter != ' ' and letter != '\r':
-			seqA += letter
+			seqA += letter.upper()
 	return seqA
 	
 
@@ -182,7 +182,6 @@ def StopCS(seq,nt,rf):
 	:param readingFrameNumber : which reading frame it will use to find start codon (1,2 or 3)
 	:return: protein sequence
 	'''
-		
 				
 	codon_stop = dict(UAA='STOP', UAG='STOP', UGA='STOP')
 	
@@ -206,15 +205,16 @@ def StopCS(seq,nt,rf):
 interest_sequence=load_fasta(param.fasta)
 id_seq_prot={}
 
+f=''
+for identifier in interest_sequence:
+	sequences=translation(interest_sequence[identifier],param.rf,param.domain,param.nt,param.allprot, param.size,param.directionality)
+	i=1
+	for sequence in sequences:
+		ident_prot=identifier+'_p'+str(i)+'_rf'+str(param.rf)+'_strand'+param.directionality+'\n'
+		i+=1
+		f+=(ident_prot)
+		sequence+='\n'
+		f+=(sequence)
 
-for sequence in interest_sequence:
-	#print(sequence)
-	print(sequence,translation(interest_sequence[sequence],param.rf,param.domain,param.nt,param.allprot, param.size,param.directionality))
-	#print('\n\n')
-	#print(sequence, SCS(interest_sequence[sequence],param.domain,param.nt,param.rf))
-	#print(sequence, StopCS(interest_sequence[sequence],param.nt,param.rf))
-	#print(interest_sequence[sequence], interest_sequence[sequence][::-1])
+print(f)
 
-
-
-#print(translation('GUGAUGAUGAUGAUGUUGGGGAAAUGA',2,'prokaryote'))

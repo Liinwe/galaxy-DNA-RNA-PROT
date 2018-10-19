@@ -1,0 +1,51 @@
+ <tool id="dna_prot_convert" name="Find Protein Sequences" version="0.1.0">
+      <description>for each sequence in a  fasta file</description>
+      
+      <command><![CDATA[ 
+		  python $__tool_directory__/parse_trans.py --fasta $input --domain $domain --rf $rf --nt $nt --allprot $allprot --size $size --directionality $directionality > $res_dna_prot]]>
+	  </command>
+	  
+      <inputs>
+			<param format="fasta" name="input" type="data" optional="false" label="Source file"></param>
+			
+			<param name="domain" type="select" label="domain" value="eukaryote">
+				<option value="prokaryote">prokaryote</option>
+				<option value="eukaryote">eukaryote</option>
+			</param>
+			
+			<param name="rf" type="select" label="reading frame" value="1">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+			</param>
+			
+			<param name="nt" type="select" label="DNA or RNA" value="DNA">
+				<option value="DNA">DNA</option>
+				<option value="RNA">RNA</option>
+			</param>
+			
+			<param name="allprot" type="select" label="Just the first protein or all of them" value="True">
+				<option value="True">True</option>
+				<option value="False">False</option>
+			</param>	
+			
+			<param name="size" type="integer" label="Minimum size to keep the found protein" value="0"></param>
+			
+			<param name="directionality" type="select" label="5->3 or 3->5" value="5t3">
+				<option value="5t3">5t3</option>
+				<option value="3t5">3t5</option>
+			</param>
+							
+     </inputs>
+      
+     <outputs>
+			<data format="fasta" name="res_dna_prot" />
+     </outputs>
+   
+     <help>
+   This tool can do the transcription of DNA to RNA and translation to protein
+   It can also find the Start and Stop codons
+     </help>
+
+</tool>
+
